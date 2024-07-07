@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { fetchPokemon } from "../utils/fetchUtils";
 
-const usePokemon = (initialUrl) => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+interface PokemonData {
+  // Define the structure of your Pokemon data here
+}
+
+const usePokemon = (initialUrl: string) => {
+  const [data, setData] = useState<PokemonData | null>(null); // Adjust PokemonData as per your fetchPokemon response type
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | Error | null>(null); // Adjust to include possible error types returned by fetchPokemon
 
   useEffect(() => {
     const fetchData = async () => {
@@ -12,13 +16,14 @@ const usePokemon = (initialUrl) => {
         const pokemonData = await fetchPokemon(initialUrl);
         setData(pokemonData);
       } catch (error) {
-        setError(error);
+        setError(error instanceof Error ? error.message : String(error));
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
   }, [initialUrl]);
+
   return { data, isLoading, error };
 };
 
